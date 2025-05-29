@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Pokémon Info - OnePage</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f8ff;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  h1 {
+    color: #ef5350;
+    margin-bottom: 10px;
+  }
+  form {
+    margin-bottom: 20px;
+  }
+  input[type="text"] {
+    padding: 8px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 2px solid #ef5350;
+    outline: none;
+  }
+  button {
+    padding: 9px 15px;
+    font-size: 16px;
+    background-color: #ef5350;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-left: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #d43f3f;
+  }
+  .card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 20px;
+    max-width: 450px;
+    width: 100%;
+    text-align: center;
+  }
+  .pokemon-img {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    margin-bottom: 15px;
+  }
+  .types {
+    margin-bottom: 15px;
+  }
+  .type {
+    display: inline-block;
+    background-color: #ef5350;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 12px;
+    margin: 0 5px;
+    font-weight: 600;
+    text-transform: capitalize;
+  }
+  .stats {
+    text-align: left;
+    margin-top: 15px;
+  }
+  .stats div {
+    margin-bottom: 6px;
+  }
+  .abilities {
+    margin-top: 10px;
+    font-style: italic;
+  }
+  .error {
+    color: #d43f3f;
+    font-weight: 700;
+    margin-top: 15px;
+  }
+</style>
+</head>
+<body>
+
+<h1>Busca tu Pokémon</h1>
+<form id="pokemonForm">
+  <input type="text" id="pokemonInput" placeholder="Nombre o ID del Pokémon" required />
+  <button type="submit">Buscar</button>
+</form>
+
+<div id="pokemonCard" class="card" style="display:none;">
+  <img id="pokemonImage" class="pokemon-img" src="" alt="Imagen Pokémon" />
+  <h2 id="pokemonName"></h2>
+  <div class="types" id="pokemonTypes"></div>
+  <div><strong>ID:</strong> <span id="pokemonId"></span></div>
+  <div><strong>Altura:</strong> <span id="pokemonHeight"></span> m</div>
+  <div><strong>Peso:</strong> <span id="pokemonWeight"></span> kg</div>
+  <div class="abilities"><strong>Habilidades:</strong> <span id="pokemonAbilities"></span></div>
+  <div class="stats" id="pokemonStats"><strong>Stats:</strong></div>
+</div>
+
+<div id="errorMsg" class="error" style="display:none;"></div>
+
+<script>
+  const form = document.getElementById('pokemonForm');
+  const input = document.getElementById('pokemonInput');
+  const card = document.getElementById('pokemonCard');
+  const errorMsg = document.getElementById('errorMsg');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const query = input.value.trim().toLowerCase();
+    if (!query) return;
+
+    // Limpia mensajes previos
+    errorMsg.style.display = 'none';
+    card.style.display = 'none';
+
+    try {
+      const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${query}`);
+      if (!res.ok) throw new Error('Pokémon no encontrado');
+
+      const data = await res.json();
+
+      // Mostrar imagen (sprites.front_default preferido)
+      const imgSrc = data.sprites.other['official-artwork'].front_default || data.sprites.front_default;
+
+      document.getElementById('pokemonImage').src = imgSrc || '';
+      document.getElementById('pokemonImage').alt = data.name;
+
+      document.getElementById('pokemonName').textContent = data.name.charAt(0).toUpperCase() + data.name.slice(1);
+      document.getElementById('pokemonId').textContent = data.id;
+      document.getElementById('pokemonHeight').textContent = (data.height / 10).toFixed(1);
+      document.getElementById('pokemonWeight').textContent = (data.weight / 10).toFixed(1);
+
+      // Tipos
+      const typesContainer = document.getElementById('pokemonTypes');
+      typesContainer.innerHTML = '';
+      data.types.forEach(({type}) => {
+        const span = document.createElement('span');
+        span.className = 'type';
+        span.textContent = type.name;
+        typesContainer.appendChild(span);
+      });
+
+      // Habilidades
+      const abilities = data.abilities.map(a => a.ability.name).join(', ');
+      document.getElementById('pokemonAbilities').textContent = abilities;
+
+      // Stats
+      const statsContainer = document.getElementById('pokemonStats');
+      statsContainer.innerHTML = '<strong>Stats:</strong><br>';
+      data.stats.forEach(({stat, base_stat}) => {
+        const div = document.createElement('div');
+        div.textContent = `${stat.name.toUpperCase()}: ${base_stat}`;
+        statsContainer.appendChild(div);
+      });
+
+      card.style.display = 'block';
+
+    } catch (error) {
+      errorMsg.textContent = error.message;
+      errorMsg.style.display = 'block';
+    }
+  });
+</script>
+
+</body>
+</html>
