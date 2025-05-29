@@ -127,9 +127,50 @@
     font-weight: 700;
     margin-top: 15px;
   }
+  .nav-links {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 15px;
+  }
+  .nav-links a {
+    color: var(--accent-color);
+    text-decoration: none;
+    font-weight: 600;
+    padding: 8px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  .nav-links a:hover {
+    background-color: rgba(128, 128, 128, 0.1);
+  }
+  .favorite-btn {
+    margin-top: 15px;
+    background-color: transparent;
+    border: 2px solid var(--accent-color);
+    color: var(--accent-color);
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .favorite-btn:hover {
+    background-color: var(--accent-color);
+    color: white;
+  }
+  .favorite-btn.active {
+    background-color: var(--accent-color);
+    color: white;
+  }
 </style>
 </head>
 <body>
+
+<div class="nav-links">
+  <a href="index.html">Buscar Pokémon</a>
+  <a href="favourites.html">Favoritos</a>
+</div>
 
 <button class="theme-toggle" id="themeToggle" aria-label="Cambiar tema">
   <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" style="display: none;">
@@ -155,6 +196,7 @@
   <div><strong>Peso:</strong> <span id="pokemonWeight"></span> kg</div>
   <div class="abilities"><strong>Habilidades:</strong> <span id="pokemonAbilities"></span></div>
   <div class="stats" id="pokemonStats"><strong>Stats:</strong></div>
+  <button class="favorite-btn" id="favoriteBtn">Añadir a favoritos</button>
 </div>
 
 <div id="errorMsg" class="error" style="display:none;"></div>
@@ -164,6 +206,34 @@
   const input = document.getElementById('pokemonInput');
   const card = document.getElementById('pokemonCard');
   const errorMsg = document.getElementById('errorMsg');
+
+  // Funcionalidad de favoritos
+  const favoriteBtn = document.getElementById('favoriteBtn');
+  let currentPokemon = null;
+
+  function updateFavoriteButton() {
+    if (!currentPokemon) return;
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    const isFavorite = favorites.some(fav => fav.id === currentPokemon.id);
+    favoriteBtn.textContent = isFavorite ? 'Quitar de favoritos' : 'Añadir a favoritos';
+    favoriteBtn.classList.toggle('active', isFavorite);
+  }
+
+  favoriteBtn.addEventListener('click', () => {
+    if (!currentPokemon) return;
+    
+    const favorites = JSON.parse(localStorage.getItem('favorites') || '[]');
+    const index = favorites.findIndex(fav => fav.id === currentPokemon.id);
+    
+    if (index === -1) {
+      favorites.push(currentPokemon);
+    } else {
+      favorites.splice(index, 1);
+    }
+    
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+    updateFavoriteButton();
+  });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -179,41 +249,49 @@
       if (!res.ok) throw new Error('Pokémon no encontrado');
 
       const data = await res.json();
+      currentPokemon = {
+        id: data.id,
+        name: data.name,
+        image: data.sprites.other['official-artwork'].front_default || data.sprites.front_default,
+        types: data.types.map(t => t.type.name),
+        height: data.height,
+        weight: data.weight,
+        abilities: data.abilities.map(a => a.ability.name),
+        stats: data.stats.map(s => ({ name: s.stat.name, value: s.base_stat }))
+      };
 
       // Mostrar imagen (sprites.front_default preferido)
-      const imgSrc = data.sprites.other['official-artwork'].front_default || data.sprites.front_default;
+      document.getElementById('pokemonImage').src = currentPokemon.image || '';
+      document.getElementById('pokemonImage').alt = currentPokemon.name;
 
-      document.getElementById('pokemonImage').src = imgSrc || '';
-      document.getElementById('pokemonImage').alt = data.name;
-
-      document.getElementById('pokemonName').textContent = data.name.charAt(0).toUpperCase() + data.name.slice(1);
-      document.getElementById('pokemonId').textContent = data.id;
-      document.getElementById('pokemonHeight').textContent = (data.height / 10).toFixed(1);
-      document.getElementById('pokemonWeight').textContent = (data.weight / 10).toFixed(1);
+      document.getElementById('pokemonName').textContent = currentPokemon.name.charAt(0).toUpperCase() + currentPokemon.name.slice(1);
+      document.getElementById('pokemonId').textContent = currentPokemon.id;
+      document.getElementById('pokemonHeight').textContent = (currentPokemon.height / 10).toFixed(1);
+      document.getElementById('pokemonWeight').textContent = (currentPokemon.weight / 10).toFixed(1);
 
       // Tipos
       const typesContainer = document.getElementById('pokemonTypes');
       typesContainer.innerHTML = '';
-      data.types.forEach(({type}) => {
+      currentPokemon.types.forEach(type => {
         const span = document.createElement('span');
         span.className = 'type';
-        span.textContent = type.name;
+        span.textContent = type;
         typesContainer.appendChild(span);
       });
 
       // Habilidades
-      const abilities = data.abilities.map(a => a.ability.name).join(', ');
-      document.getElementById('pokemonAbilities').textContent = abilities;
+      document.getElementById('pokemonAbilities').textContent = currentPokemon.abilities.join(', ');
 
       // Stats
       const statsContainer = document.getElementById('pokemonStats');
       statsContainer.innerHTML = '<strong>Stats:</strong><br>';
-      data.stats.forEach(({stat, base_stat}) => {
+      currentPokemon.stats.forEach(stat => {
         const div = document.createElement('div');
-        div.textContent = `${stat.name.toUpperCase()}: ${base_stat}`;
+        div.textContent = `${stat.name.toUpperCase()}: ${stat.value}`;
         statsContainer.appendChild(div);
       });
 
+      updateFavoriteButton();
       card.style.display = 'block';
 
     } catch (error) {
