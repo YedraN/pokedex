@@ -15,6 +15,7 @@
     align-items: center;
     color: var(--text-color);
     transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
   }
   :root {
     --bg-color: #1a1a1a;
@@ -54,10 +55,19 @@
   }
   h1 {
     color: var(--accent-color);
-    margin-bottom: 10px;
+    margin: 60px 0 20px;
+    text-align: center;
+    padding: 0 20px;
   }
   form {
     margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    width: 100%;
+    max-width: 500px;
+    padding: 0 20px;
   }
   input[type="text"] {
     padding: 8px;
@@ -67,6 +77,8 @@
     outline: none;
     background-color: var(--input-bg);
     color: var(--text-color);
+    flex: 1;
+    min-width: 200px;
   }
   button {
     padding: 9px 15px;
@@ -75,9 +87,9 @@
     color: white;
     border: none;
     border-radius: 5px;
-    margin-left: 10px;
     cursor: pointer;
     transition: background-color 0.3s ease;
+    white-space: nowrap;
   }
   button:hover {
     background-color: var(--accent-color);
@@ -91,6 +103,7 @@
     max-width: 450px;
     width: 100%;
     text-align: center;
+    margin: 0 20px;
   }
   .pokemon-img {
     width: 150px;
@@ -100,6 +113,10 @@
   }
   .types {
     margin-bottom: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    justify-content: center;
   }
   .type {
     display: inline-block;
@@ -107,7 +124,6 @@
     color: white;
     padding: 5px 12px;
     border-radius: 12px;
-    margin: 0 5px;
     font-weight: 600;
     text-transform: capitalize;
   }
@@ -121,11 +137,14 @@
   .abilities {
     margin-top: 10px;
     font-style: italic;
+    word-break: break-word;
   }
   .error {
     color: var(--accent-color);
     font-weight: 700;
     margin-top: 15px;
+    text-align: center;
+    padding: 0 20px;
   }
   .nav-links {
     position: fixed;
@@ -133,6 +152,7 @@
     left: 20px;
     display: flex;
     gap: 15px;
+    z-index: 100;
   }
   .nav-links a {
     color: var(--accent-color);
@@ -154,6 +174,8 @@
     border-radius: 5px;
     cursor: pointer;
     transition: all 0.3s ease;
+    width: 100%;
+    max-width: 200px;
   }
   .favorite-btn:hover {
     background-color: var(--accent-color);
@@ -162,6 +184,29 @@
   .favorite-btn.active {
     background-color: var(--accent-color);
     color: white;
+  }
+
+  @media (max-width: 600px) {
+    .nav-links {
+      position: static;
+      margin-bottom: 20px;
+      justify-content: center;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    .card {
+      margin: 0 10px;
+      padding: 15px;
+    }
+    .pokemon-img {
+      width: 120px;
+      height: 120px;
+    }
+    .type {
+      font-size: 14px;
+      padding: 4px 10px;
+    }
   }
 </style>
 </head>
