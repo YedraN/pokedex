@@ -1,0 +1,117 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <!-- Tailwind Play CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <title>Pokedex</title>
+
+  <style>
+    /* Tarjeta animada */
+    .pokemon-card {
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 1rem;
+    }
+
+    .pokemon-card img {
+      transition: width 0.4s ease, height 0.4s ease;
+      width: 100%;
+      height: auto;
+    }
+
+    .pokemon-card .stats {
+      display: none; /* ocultas por defecto */
+      margin-top: 0.5rem;
+    }
+
+    /* Tarjeta activa - tamaño y sombra */
+    .pokemon-card.active {
+      transform: scale(1.2) translateY(-10px);
+      z-index: 50;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    /* Imagen dentro de la tarjeta activa */
+    .pokemon-card.active img {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto;
+    }
+
+    /* Mostrar stats solo cuando la tarjeta está activa */
+    .pokemon-card.active .stats {
+      display: block;
+    }
+
+    /* MEDIA QUERIES PARA RESPONSIVE */
+    @media (max-width: 768px) {
+      .pokemon-card.active {
+        transform: scale(1.1) translateY(-5px); /* menos escala en tablet/móvil */
+      }
+      .pokemon-card.active img {
+        width: 100px;
+        height: 100px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .pokemon-card.active {
+        transform: scale(1.05) translateY(-3px); /* casi nada de escala en móviles pequeños */
+      }
+      .pokemon-card.active img {
+        width: 80px;
+        height: 80px;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-br from-red-50 via-white to-sky-50 min-h-screen">
+  <!-- HEADER -->
+  <header class="bg-gradient-to-r from-red-600 to-rose-500 shadow-md">
+    <div class="max-w-6xl mx-auto flex items-center justify-between p-4 text-white">
+      <h1 class="text-3xl font-extrabold tracking-wide">Pokédex</h1>
+      <button id="logoutBtn" class="bg-white text-red-600 font-semibold px-4 py-2 rounded-xl shadow hover:bg-gray-100">
+        Cerrar sesión
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main class="max-w-6xl mx-auto p-6" id="app">
+    <!-- Aquí se cargan los pokémon dinámicamente -->
+    <div id="pokemonGrid" class="grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"></div>
+  </main>
+
+  <!-- LOGIN MODAL -->
+  <div id="loginModal" class="fixed inset-0 flex items-center justify-center bg-black/50 hidden">
+    <div class="bg-white rounded-2xl p-8 shadow-xl w-80">
+      <h2 class="text-2xl font-bold mb-4 text-center text-red-600">Inicia sesión</h2>
+      <input type="text" id="username" placeholder="Usuario"
+             class="w-full mb-3 px-3 py-2 border rounded-lg focus:ring focus:ring-red-400">
+      <input type="password" id="password" placeholder="Contraseña"
+             class="w-full mb-3 px-3 py-2 border rounded-lg focus:ring focus:ring-red-400">
+      <button id="loginBtn"
+              class="w-full bg-red-600 text-white font-semibold py-2 rounded-lg hover:bg-red-700">
+        Entrar
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal para Detalles de Pokémon -->
+  <div id="pokemonModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+    <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 relative">
+      <button id="closeModal" class="absolute top-2 right-2 text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+      <div id="modalContent"></div>
+    </div>
+  </div>
+
+  <script src="{% static 'js/app.js' %}"></script>
+</body>
+</html>
