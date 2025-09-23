@@ -4,82 +4,35 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <!-- Tailwind Play CDN -->
+  <link rel="stylesheet" href="../../static/css/styles.css">
+  <link rel="shortcut icon" href="../../static/assets/pokedex.png" type="image/x-icon">
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <title>Pokedex</title>
-
-  <style>
-    /* Tarjeta animada */
-    .pokemon-card {
-      transition: transform 0.4s ease, box-shadow 0.4s ease;
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      padding: 1rem;
-    }
-
-    .pokemon-card img {
-      transition: width 0.4s ease, height 0.4s ease;
-      width: 100%;
-      height: auto;
-    }
-
-    .pokemon-card .stats {
-      display: none; /* ocultas por defecto */
-      margin-top: 0.5rem;
-    }
-
-    /* Tarjeta activa - tamaño y sombra */
-    .pokemon-card.active {
-      transform: scale(1.2) translateY(-10px);
-      z-index: 50;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-    }
-
-    /* Imagen dentro de la tarjeta activa */
-    .pokemon-card.active img {
-      width: 120px;
-      height: 120px;
-      margin: 0 auto;
-    }
-
-    /* Mostrar stats solo cuando la tarjeta está activa */
-    .pokemon-card.active .stats {
-      display: block;
-    }
-
-    /* MEDIA QUERIES PARA RESPONSIVE */
-    @media (max-width: 768px) {
-      .pokemon-card.active {
-        transform: scale(1.1) translateY(-5px); /* menos escala en tablet/móvil */
-      }
-      .pokemon-card.active img {
-        width: 100px;
-        height: 100px;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .pokemon-card.active {
-        transform: scale(1.05) translateY(-3px); /* casi nada de escala en móviles pequeños */
-      }
-      .pokemon-card.active img {
-        width: 80px;
-        height: 80px;
-      }
-    }
-  </style>
 </head>
 <body class="bg-gradient-to-br from-red-50 via-white to-sky-50 min-h-screen">
   <!-- HEADER -->
   <header class="bg-gradient-to-r from-red-600 to-rose-500 shadow-md">
     <div class="max-w-6xl mx-auto flex items-center justify-between p-4 text-white">
       <h1 class="text-3xl font-extrabold tracking-wide">Pokédex</h1>
-      <button id="logoutBtn" class="bg-white text-red-600 font-semibold px-4 py-2 rounded-xl shadow hover:bg-gray-100">
-        Cerrar sesión
-      </button>
+      <div class="flex items-center gap-4">
+        <!-- Botón de modo oscuro -->
+        <button id="themeToggle" class="p-2 rounded-full bg-white/20 hover:bg-white/30 transition">
+          <!-- Icono Sol (modo claro) -->
+          <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 3v1m0 16v1m9-9h1M4 12H3m16.95-6.95l-.7.7M6.34 17.66l-.7.7M17.66 17.66l.7.7M6.34 6.34l.7.7M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+          </svg>
+          <!-- Icono Luna (modo oscuro) -->
+          <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+          </svg>
+        </button>
+
+        <!-- Botón de cerrar sesión -->
+        <button id="logoutBtn" class="bg-white text-red-600 font-semibold px-4 py-2 rounded-xl shadow hover:bg-gray-100">
+          Cerrar sesión
+        </button>
+      </div>
     </div>
   </header>
 
@@ -113,5 +66,32 @@
   </div>
 
   <script src="{% static 'js/app.js' %}"></script>
+
+  <!-- Script para alternar modo oscuro -->
+  <script>
+    const themeToggle = document.getElementById("themeToggle");
+    const sunIcon = document.getElementById("sunIcon");
+    const moonIcon = document.getElementById("moonIcon");
+
+    if (localStorage.getItem("theme") === "dark") {
+      document.body.classList.add("dark-mode");
+      sunIcon.classList.remove("hidden");
+      moonIcon.classList.add("hidden");
+    }
+
+    themeToggle.addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+
+      if (document.body.classList.contains("dark-mode")) {
+        sunIcon.classList.remove("hidden");
+        moonIcon.classList.add("hidden");
+        localStorage.setItem("theme", "dark");
+      } else {
+        sunIcon.classList.add("hidden");
+        moonIcon.classList.remove("hidden");
+        localStorage.setItem("theme", "light");
+      }
+    });
+  </script>
 </body>
 </html>

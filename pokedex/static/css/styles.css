@@ -1,0 +1,88 @@
+.pokemon-card {
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 1rem;
+}
+
+.pokemon-card img {
+    transition: width 0.4s ease, height 0.4s ease;
+    width: 100%;
+    height: auto;
+}
+
+.pokemon-card .stats {
+    display: none; /* ocultas por defecto */
+    margin-top: 0.5rem;
+}
+
+/* Tarjeta activa - tamaño y sombra */
+.pokemon-card.active {
+    transform: scale(1.2) translateY(-10px);
+    z-index: 50;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+}
+
+/* Imagen dentro de la tarjeta activa */
+.pokemon-card.active img {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto;
+}
+
+/* Mostrar stats solo cuando la tarjeta está activa */
+.pokemon-card.active .stats {
+    display: block;
+}
+
+/* MEDIA QUERIES PARA RESPONSIVE */
+@media (max-width: 768px) {
+    .pokemon-card.active {
+        transform: scale(1.1) translateY(-5px); /* menos escala en tablet/móvil */
+    }
+    .pokemon-card.active img {
+        width: 100px;
+        height: 100px;
+    }
+}
+
+@media (max-width: 480px) {
+    .pokemon-card.active {
+        transform: scale(1.05) translateY(-3px); /* casi nada de escala en móviles pequeños */
+    }
+    .pokemon-card.active img {
+        width: 80px;
+        height: 80px;
+    }
+}
+
+/* 🌙 MODO OSCURO */
+body.dark-mode {
+    background: linear-gradient(to bottom right, #0f172a, #1e293b, #334155); /* colores oscuros */
+    color: #f1f5f9;
+}
+
+body.dark-mode header {
+    background: linear-gradient(to right, #1e293b, #334155);
+}
+
+body.dark-mode #loginModal .bg-white,
+body.dark-mode #pokemonModal .bg-white {
+    background-color: #1e293b !important;
+    color: #f1f5f9;
+}
+
+body.dark-mode .pokemon-card {
+    background-color: #1e293b;
+    border: 1px solid #475569;
+    color: #f1f5f9;
+}
+
+body.dark-mode button {
+    background-color: #334155;
+    color: #f1f5f9;
+    border: 1px solid #475569;
+}
